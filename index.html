@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <script rel="server.js"></script>
+  <style>
+    body {
+      font-family: 'Comfortaa', sans-serif;
+      padding: 20px;
+      background-image: url(https://i.pinimg.com/originals/71/9e/80/719e80760999b4c355a723224120eb07.png);
+      user-select: none;
+      overflow: hidden;
+
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 24px;
+      color: white;
+      z-index: 1000;
+      transition: opacity 1s ease-out;
+    }
+
+    #loading-bar {
+      width: 0;
+      height: 10px;
+      background-color: #cf78cf;
+      transition: width 3s ease-in-out;
+    }
+
+    #start-screen {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  gap: 20px;
+}
+
+h1 {
+  font-size: 36px;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.733);
+}
+    #start-screen button {
+      font-size: 20px;
+      padding: 10px 20px;
+      background-color: #cf78cf;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      position: absolute;
+      margin-top: -60px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    #start-screen button:hover {
+      background-color: #fa00fa;
+      transform: scale(1.1);
+    }
+
+    #content {
+      display: block;
+    }
+
+    #loading-text {
+      margin-top: 10px;
+      font-size: 20px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1050;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-content {
+      background-color: #f1f1f1;
+      border-radius: 10px;
+      padding: 20px;
+      width: 450px;
+      max-width: 80%;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: none;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #cf78cf;
+      color: white;
+    }
+
+    td {
+      background-color: rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    td:hover {
+      transform: scale(1.05);
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      position: relative;
+      background-color: rgb(241, 230, 230);
+    }
+
+    td.time-cell {
+      background-color: rgba(255, 255, 255, 0.7);
+      transition: none;
+    }
+
+    td[contenteditable]:focus {
+      background-color: #fff;
+      border: 2px solid #cf78cf;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      background-color: #cf78cf;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-family: 'Comfortaa', sans-serif;
+      transition: all 0.3s ease-in-out;
+      border-radius: 10px;
+      outline: none;
+      appearance: none;
+    }
+
+    input {
+      margin-top: 10px;
+      padding: 10px 15px;
+      background-color: #daa5da;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-family: 'Comfortaa', sans-serif;
+      transition: all 0.3s ease-in-out;
+      border-radius: 10px;
+      outline: none;
+      appearance: none;
+    }
+
+    select {
+      margin-top: 10px;
+      padding: 10px 15px;
+      background-color: #cf78cf;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-family: 'Comfortaa', sans-serif;
+      transition: all 0.3s ease-in-out;
+      border-radius: 10px;
+      outline: none;
+      appearance: none;
+    }
+
+    button:hover {
+      background-color: #dac1dac9;
+      transform: scale(1.02);
+    }
+
+    input:hover {
+      background-color: #dac1dac9;
+      transform: scale(1.02);
+    }
+
+    select:hover {
+      background-color: #cf78cf;
+      transform: scale(1.02);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    label {
+      padding: 10px 20px;
+      border: none;
+      background-color: #cf78cf;
+      color: white;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    input::placeholder {
+      color: rgba(0, 0, 0, 0.5);
+      font-style: italic;
+    }
+
+    h1 {
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
+    }
+
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      margin: auto;
+      background-color: #cf78cf;
+      color: white;
+      text-align: center;
+      border-radius: 25px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 30px; opacity: 1;}
+    }
+
+    @keyframes fadeout {
+      from {bottom: 30px; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1050;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-content1 {
+      background-color: #f1f1f1;
+      border-radius: 10px;
+      padding: 20px;
+      width: 400px;
+      max-width: 80%;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .modal-content1 input {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-style: italic;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-content1 button {
+      margin: 10px;
+      padding: 10px;
+      background-color: #cf78cf;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 10px;
+      font-family: 'Comfortaa', sans-serif;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal-content1 button:hover {
+      background-color: #fa00fa;
+    }
+
+#createScheduleModal {
+  display: none;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+#createScheduleModal .modal-content1 {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 20px;
+  width: 400px;
+  max-width: 80%;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+#createScheduleModal input {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+#createScheduleModal button {
+  margin: 10px;
+  padding: 10px;
+  background-color: #cf78cf;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  font-family: 'Comfortaa', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+#createScheduleModal button:hover {
+  background-color: #fa00fa;
+}
+
+#scheduleModal {
+  display: none;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+#scheduleModal .modal-content1 {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 20px;
+  width: 400px;
+  max-width: 80%;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+#scheduleModal input {
+  width: 400px;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+#scheduleModal button {
+  margin: 10px;
+  padding: 10px;
+  background-color: #cf78cf;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  font-family: 'Comfortaa', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+#scheduleModal button:hover {
+  background-color: #fa00fa;
+}
+
+#start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  gap: 20px;
+}
+    #start-screen h1 {
+      display: none;
+      font-size: 24px;
+      color: white;
+      margin-bottom: 200px;
+      text-shadow: 0 0 3px rgba(0, 0, 0, 0.74);
+      opacity: 0; /* Добавим начальную прозрачность */
+      transition: opacity 1s ease; /* Плавный переход для появления */
+    }
+
+#presetNameInput {
+  width: 370px;
+  padding: 15px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  border: 2px solid #d4bfd4;
+  border-radius: 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+#presetNameInput:focus {
+  border-color: #f79fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.404);
+  outline: none;
+}
+
+.modal-content {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#scheduleDaysInput {
+  width: 250px;
+  padding: 15px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  border: 2px solid #d4bfd4;
+  border-radius: 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+#scheduleDaysInput:focus {
+  border-color: #f79fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.404);
+  outline: none;
+}
+
+#scheduleLessonsInput {
+  width: 250px;
+  padding: 15px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  border: 2px solid #d4bfd4;
+  border-radius: 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#scheduleLessonsInput:focus {
+  border-color: #f79fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.404);
+  outline: none;
+}
+
+#scheduleCancelButton {
+  margin: 10px;
+  padding: 10px;
+  background-color: #cf78cf;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  font-family: 'Comfortaa', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #cf78cf;
+  color: white;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+    #languageSelect {
+      appearance: none;
+      padding: 10px 20px;
+      border: none;
+      background-color: rgba(207, 120, 207, 0);
+      color: #ffffff;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #languageSelect:hover,
+    #languageSelect:focus {
+      color: #ffffff;
+    }
+
+    #languageSelect option {
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #333;
+    }
+
+    #languageSelect option:hover {
+      background-color: rgba(200, 200, 255, 0.8);
+    }
+
+#backgroundImageUpload {
+  padding: 10px 20px;
+  border: none;
+  background-color: #cf78cf;
+  color: white;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+  </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div id="loading-bar"></div>
+        <div id="loading-text">Loading...</div>
+    </div>
+    <select id="languageSelect">
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+      <option value="ua">Українська</option>
+    </select>
+
+  <div id="start-screen" style="display: none;">
+    <h1 data-translate="welcomeMessage">Hey, let's work together!</h1>
+    <button id="createButton" data-translate="createButton">Create</button>
+  </div>
+
+  <div id="scheduleModal" class="modal">
+    <div class="modal-content">
+      <h2 data-translate="createScheduleTitle">Create Schedule</h2>
+      <input type="number" id="scheduleDaysInput" placeholder="Number of days (e.g. 5)" min="1" max="7" />
+      <input type="number" id="scheduleLessonsInput" placeholder="Number of lessons (e.g. 4)" min="1" />
+      <button id="scheduleCreateButton" data-translate="createButton">Create</button>
+      <button id="scheduleCancelButton" data-translate="cancelButton">Cancel</button>
+    </div>
+  </div>
+    <div id="content">
+
+      <h1>Your Schedule</h1>
+
+      <div id="presetControls">
+        <button id="presetButton" data-translate="presetButton"> <i class="fa-solid fa-folder"></i> Pressets</button>
+      </div>
+
+      <table id="scheduleTable"></table>
+
+      <button id="saveButton" data-translate="saveButton"> <i class="fa-solid fa-floppy-disk"></i> Save </button>
+      <button id="lockButton" data-translate="lockButton"><i class="fa-solid fa-lock"></i> Block editing</button>
+      <button id="clearButton" data-translate="clearButton"><i class="fa-solid fa-trash"></i> Clear</button>
+
+      <label for="backgroundImageUpload">Select Backgroung</label>
+      <input type="file" id="backgroundImageUpload" name="backgroundImageUpload" accept="image/*">
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="presetModal" class="modal">
+      <div class="modal-content1">
+        <h2>Pressets</h2>
+        <select id="presetSelect">
+          <option value="">Select presset</option>
+        </select>
+        <input type="text" id="presetNameInput" placeholder="Name of presset" />
+        <button id="applyPresetButton">Apply</button>
+        <button id="addPresetButton">Add</button>
+        <button id="deletePresetButton">Delete</button>
+        <button id="renamePresetButton">Rename</button>
+        <button id="closePresetModal">Close</button>
+
+      </div>
+    </div>
+
+    <script>
+
+const translations = {
+  en: {
+    welcomeMessage: "Hey, let's work together!",
+    createButton: "Create",
+    createScheduleTitle: "Create Schedule",
+    cancelButton: "Cancel",
+    presetButton: "Pressets",
+    saveButton: "Save",
+    lockButton: "Block editing",
+    clearButton: "Clear",
+    backgroundLabel: "Select Background"
+  },
+  ru: {
+    welcomeMessage: "Привет, давай поработать вместе!",
+    createButton: "Создать",
+    createScheduleTitle: "Создать расписание",
+    cancelButton: "Отмена",
+    presetButton: "Пресеты",
+    saveButton: "Сохранить",
+    lockButton: "Заблокировать редактирование",
+    clearButton: "Очистить",
+    backgroundLabel: "Выбрать фон"
+  },
+  ua: {
+    welcomeMessage: "Привіт, давай працювати разом!",
+    createButton: "Створити",
+    createScheduleTitle: "Створити розклад",
+    cancelButton: "Відміна",
+    presetButton: "Пресети",
+    saveButton: "Зберегти",
+    lockButton: "Заблокувати редагування",
+    clearButton: "Очистити",
+    backgroundLabel: "Обрати фон"
+  }
+};
+
+
+function changeLanguage(language) {
+  document.querySelectorAll("[data-translate]").forEach((element) => {
+    const key = element.getAttribute("data-translate");
+    element.textContent = translations[language][key];
+  });
+}
+
+let currentLanguage = 'en';
+changeLanguage(currentLanguage);
+
+
+document.getElementById("languageSelect").addEventListener("change", function() {
+  currentLanguage = this.value;
+  changeLanguage(currentLanguage);
+});
+
+const createButton = document.getElementById('createButton');
+const scheduleModal = document.getElementById('scheduleModal');
+const startScreen = document.getElementById('start-screen');
+const content = document.getElementById('content');
+const scheduleCreateButton = document.getElementById('scheduleCreateButton');
+const scheduleDaysInput = document.getElementById('scheduleDaysInput');
+const scheduleLessonsInput = document.getElementById('scheduleLessonsInput');
+const scheduleTable = document.getElementById('scheduleTable');
+const scheduleCancelButton = document.getElementById('scheduleCancelButton');
+
+function saveTableData() {
+  let tableData = {};
+  const rows = scheduleTable.rows;
+
+  for (let i = 1; i < rows.length; i++) {
+    const cells = rows[i].cells;
+    tableData[i] = [];
+    for (let j = 1; j < cells.length; j++) {
+      tableData[i].push(cells[j].innerText);
+    }
+  }
+  localStorage.setItem('savedTable', JSON.stringify(tableData));
+}
+
+function loadTableData() {
+  const savedTable = JSON.parse(localStorage.getItem('savedTable'));
+  if (savedTable) {
+    const days = Object.keys(savedTable[1]).length;
+    const lessons = Object.keys(savedTable).length;
+    scheduleTable.innerHTML = generateTable(days, lessons);
+
+    const rows = scheduleTable.rows;
+    for (let i = 1; i < rows.length; i++) {
+      const cells = rows[i].cells;
+      for (let j = 1; j < cells.length; j++) {
+        cells[j].innerText = savedTable[i] ? savedTable[i][j - 1] : '';
+      }
+    }
+    content.style.display = 'block';
+    startScreen.style.display = 'none';
+    createButton.textContent = 'Continue';
+  } else {
+    startScreen.style.display = 'flex';
+  }
+}
+
+scheduleCreateButton.addEventListener('click', () => {
+  const days = scheduleDaysInput.value || 5;
+  const lessons = scheduleLessonsInput.value || 4;
+
+  if (days < 1 || days > 7 || lessons < 1) {
+    alert("Enter the correct number of days and lessons.");
+    return;
+  }
+
+  scheduleTable.innerHTML = generateTable(days, lessons);
+  scheduleModal.style.display = 'none';
+  content.style.display = 'block';
+  saveTableData();
+});
+
+scheduleTable.addEventListener('input', saveTableData);
+
+function generateTable(days, lessons) {
+  let tableHtml = `<thead><tr><th>№</th>`;
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+  for (let i = 0; i < days; i++) {
+    tableHtml += `<th>${daysOfWeek[i]}</th>`;
+  }
+  tableHtml += `</tr></thead><tbody>`;
+
+  for (let i = 1; i <= lessons; i++) {
+    tableHtml += `<tr><td class="time-cell">${i}</td>`;
+    for (let j = 0; j < days; j++) {
+      tableHtml += `<td contenteditable="true"></td>`;
+    }
+    tableHtml += `</tr>`;
+  }
+
+  tableHtml += `</tbody>`;
+  return tableHtml;
+}
+
+scheduleCancelButton.addEventListener('click', () => {
+  scheduleModal.style.display = 'none';
+  startScreen.style.display = 'flex';
+});
+
+window.onload = loadTableData;
+
+createButton.addEventListener('click', () => {
+  const savedTable = JSON.parse(localStorage.getItem('savedTable'));
+  if (savedTable) {
+    loadTableData();
+  } else {
+    startScreen.style.display = 'none';
+    scheduleModal.style.display = 'flex';
+  }
+});
+
+
+const loadingScreen = document.getElementById('loading-screen');
+const loadingBar = document.getElementById('loading-bar');
+const backgroundImageUpload = document.getElementById('backgroundImageUpload');
+const body = document.querySelector('body');
+const cooldownTime = 60 * 60 * 1000;
+const lastLoadTime = localStorage.getItem('lastLoadTime');
+const currentTime = new Date().getTime();
+
+if (!lastLoadTime || currentTime - lastLoadTime > cooldownTime) {
+  setTimeout(() => {
+    loadingBar.style.width = '100%';
+    setTimeout(() => {
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        startScreen.style.display = 'flex';
+        content.style.display = 'none';
+      }, 1000);
+    }, 3000);
+  }, 500);
+
+  setTimeout(() => {
+    loadingBar.style.width = '100%';
+    setTimeout(() => {
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        startScreen.style.display = 'flex';
+        content.style.display = 'none';
+
+        const startScreenHeading = document.querySelector('#start-screen h1');
+        startScreenHeading.style.display = 'block';
+        setTimeout(() => {
+          startScreenHeading.style.opacity = '1';
+        }, 100);
+      }, 1000);
+    }, 3000);
+  }, 500);
+
+  const startScreenButton = document.querySelector('#start-screen button');
+  startScreenButton.style.display = 'block';
+  setTimeout(() => {
+    startScreenButton.style.opacity = '1';
+  }, 4800);
+
+  localStorage.setItem('lastLoadTime', currentTime);
+} else {
+
+  loadingScreen.style.display = 'none';
+  startScreen.style.display = 'flex';
+  content.style.display = 'none';
+}
+
+backgroundImageUpload.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      body.style.backgroundImage = `url(${event.target.result})`;
+      localStorage.setItem('backgroundImage', event.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+const savedBackgroundImage = localStorage.getItem('backgroundImage');
+if (savedBackgroundImage) {
+  body.style.backgroundImage = `url(${savedBackgroundImage})`;
+}
+
+
+      const saveButton = document.getElementById('saveButton');
+      const clearButton = document.getElementById('clearButton');
+      const lockButton = document.getElementById('lockButton');
+      const presetButton = document.getElementById('presetButton');
+      const presetModal = document.getElementById('presetModal');
+      const closePresetModal = document.getElementById('closePresetModal');
+      const presetNameInput = document.getElementById('presetNameInput');
+      const addPresetButton = document.getElementById('addPresetButton');
+      const applyPresetButton = document.getElementById('applyPresetButton');
+      const deletePresetButton = document.getElementById('deletePresetButton');
+      const renamePresetButton = document.getElementById('renamePresetButton');
+      const presetSelect = document.getElementById('presetSelect');
+      const toast = document.getElementById('toast');
+
+      let presets = JSON.parse(localStorage.getItem('presets')) || {};
+
+
+      const showToast = (message) => {
+        toast.textContent = message;
+        toast.className = "toast show";
+        setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
+      };
+
+      const saveSchedule = () => {
+        let scheduleData = {};
+        const rows = scheduleTable.rows;
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].cells;
+          scheduleData[i] = [];
+          for (let j = 1; j < cells.length; j++) {
+            scheduleData[i].push(cells[j].innerText);
+          }
+        }
+        localStorage.setItem('schedule', JSON.stringify(scheduleData));
+        showToast("Schedule maintained!");
+      };
+
+      const loadSchedule = (schedule) => {
+        const rows = scheduleTable.rows;
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].cells;
+          for (let j = 1; j < cells.length; j++) {
+            cells[j].innerText = schedule && schedule[i] ? schedule[i][j - 1] : '';
+          }
+        }
+      };
+
+      const clearSchedule = () => {
+        loadSchedule(null);
+        showToast("Cleared!");
+      };
+
+      const lockSchedule = () => {
+        const isLocked = lockButton.classList.contains('locked');
+        const cells = document.querySelectorAll('td[contenteditable]');
+        cells.forEach(cell => cell.setAttribute('contenteditable', isLocked ? "true" : "false"));
+        lockButton.classList.toggle('locked');
+        lockButton.innerHTML = isLocked ? '<i class="fa-solid fa-lock"></i> Block editing' : '<i class="fa-solid fa-lock-open"></i> Unblock editing';
+        showToast(isLocked ? "Editing blocked!" : "Editing unblocked!");
+      };
+
+      const openPresetModal = () => {
+        presetModal.style.display = 'flex';
+      };
+
+      const closePresetModalFunc = () => {
+        presetModal.style.display = 'none';
+      };
+
+      const updatePresetSelect = () => {
+        presetSelect.innerHTML = '<option value="">Выберите пресет</option>';
+        Object.keys(presets).forEach(presetName => {
+          const option = document.createElement('option');
+          option.value = presetName;
+          option.textContent = presetName;
+          presetSelect.appendChild(option);
+        });
+      };
+
+      const addPreset = () => {
+        const presetName = presetNameInput.value.trim();
+        if (!presetName) {
+          showToast('Enter the name of the preset');
+          return;
+        }
+        if (presets[presetName]) {
+          showToast('A preset with that name already exists');
+          return;
+        }
+        const scheduleData = JSON.parse(localStorage.getItem('schedule'));
+        presets[presetName] = scheduleData;
+        localStorage.setItem('presets', JSON.stringify(presets));
+        updatePresetSelect();
+        showToast(`Preset "${presetName}" added`);
+      };
+
+const applyPreset = () => {
+  const selectedPreset = presetSelect.value;
+
+  // Отладочный вывод, чтобы проверить значение пресета и объект presets
+  console.log("Selected Preset:", selectedPreset);
+  console.log("Presets Object:", presets);
+
+  if (!selectedPreset || !presets[selectedPreset]) {
+    showToast('Select a preset to apply');
+    return;
+  }
+
+  // Если пресет найден, загружаем его
+  loadSchedule(presets[selectedPreset]);
+  showToast(`Preset "${selectedPreset}" applied`);
+};
+
+const deletePreset = () => {
+        const selectedPreset = presetSelect.value;
+        if (!selectedPreset) {
+          showToast('Select a preset for deletion');
+          return;
+        }
+        delete presets[selectedPreset];
+        localStorage.setItem('presets', JSON.stringify(presets));
+        updatePresetSelect();
+        showToast(`Preset "${selectedPreset}" deleted`);
+      };
+
+      const renamePreset = () => {
+        const selectedPreset = presetSelect.value;
+        const newPresetName = presetNameInput.value.trim();
+        if (!selectedPreset) {
+          showToast('Select the preset to rename');
+          return;
+        }
+        if (!newPresetName) {
+          showToast('Enter a new name for the preset');
+          return;
+        }
+        if (presets[newPresetName]) {
+          showToast('A preset with that name already exists');
+          return;
+        }
+        presets[newPresetName] = presets[selectedPreset];
+        delete presets[selectedPreset];
+        localStorage.setItem('presets', JSON.stringify(presets));
+        updatePresetSelect();
+        showToast(`The preset has been renamed "${newPresetName}"`);
+      };
+
+        presetButton.addEventListener('click', openPresetModal);
+        closePresetModal.addEventListener('click', closePresetModalFunc);
+        addPresetButton.addEventListener('click', addPreset);
+        applyPresetButton.addEventListener('click', applyPreset);
+        deletePresetButton.addEventListener('click', deletePreset);
+        renamePresetButton.addEventListener('click', renamePreset);
+
+        saveButton.addEventListener('click', saveSchedule);
+        clearButton.addEventListener('click', clearSchedule);
+        lockButton.addEventListener('click', lockSchedule);
+        loadSchedule(JSON.parse(localStorage.getItem('schedule')));
+
+loadSchedule(JSON.parse(localStorage.getItem('schedule')));
+updatePresetSelect();
+
+        </script>
+
+</body>
+</html>
